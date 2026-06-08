@@ -1,5 +1,6 @@
 from urllib.parse import urlencode
 from urllib.request import urlopen
+from urllib.error import HTTPError, URLError
 
 
 class TelegramNotifier:
@@ -17,6 +18,9 @@ class TelegramNotifier:
 
         query = urlencode({"chat_id": self.chat_id, "text": message})
         url = f"https://api.telegram.org/bot{self.bot_token}/sendMessage?{query}"
-        with urlopen(url, timeout=10):
-            pass
-        return True
+        try:
+            with urlopen(url, timeout=10):
+                pass
+            return True
+        except (HTTPError, URLError):
+            return False
